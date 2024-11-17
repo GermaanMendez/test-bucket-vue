@@ -28,14 +28,21 @@ jobs:
     - name: read variables
       run: echo "Bucket name is ${{ secrets.S3_BUCKET_NAME }}  AWS acces key is ${{ secrets.AWS_ACCESS_KEY_ID }}"
 
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-session-token: ${{AWS_TOKEN_SECRET}}
+        aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Deploy to S3
       uses: jakejarvis/s3-sync-action@v0.5.1
       with:
         args: --acl public-read --delete
       env:
-        AWS_S3_BUCKET: "test-vue-gm"
-        AWS_ACCESS_KEY_ID: "ASIA2MAWD564UJ3URUG6"
-        AWS_SECRET_ACCESS_KEY: "TgDhN9b2P6YcWzawVNKOSwmnzwupspR//nkaXrl9"
-        AWS_REGION: "us-east-1"
+        AWS_S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
         SOURCE_DIR: dist 
