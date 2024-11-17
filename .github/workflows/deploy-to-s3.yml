@@ -30,39 +30,39 @@ jobs:
         node-version: [16.x]
 
     steps:
-    - name: Checkout source code
-      uses: actions/checkout@v3
+      - name: Checkout source code
+        uses: actions/checkout@v3
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: npm install
 
-    - name: Run Linters
-      run: npm run linters-ci
+      # Ejecutar ESLint directamente
+      - name: Run ESLint
+        run: npx eslint . --ext .js,.vue
 
-    - name: Build Vue App
-      run: ./.github/scripts/build.sh
-      shell: bash
-      env:
-        CI_ENV: ${{ inputs.CI_ENV }}
-        CONTENTFUL_ENVIRONMENT: ${{ inputs.CONTENTFUL_ENVIRONMENT }}
-        S3_ORIGIN_BUCKET:  ${{ secrets.S3_BUCKET_NAME}}
+      - name: Build Vue App
+        run: ./.github/scripts/build.sh
+        shell: bash
+        env:
+          CI_ENV: ${{ inputs.CI_ENV }}
+          CONTENTFUL_ENVIRONMENT: ${{ inputs.CONTENTFUL_ENVIRONMENT }}
+          S3_ORIGIN_BUCKET:  ${{ secrets.S3_BUCKET_NAME}}
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-session-token: ${{ secrets.AWS_TOKEN_SECRET }}
-        aws-region: ${{ secrets.AWS_REGION }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_TOKEN_SECRET }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: S3 Deploy
-      run: ./.github/scripts/deploy.sh
-      shell: bash
-      env:
-        S3_ORIGIN_BUCKET: ${{ secrets.S3_BUCKET_NAME}}
-
+      - name: S3 Deploy
+        run: ./.github/scripts/deploy.sh
+        shell: bash
+        env:
+          S3_ORIGIN_BUCKET: ${{ secrets.S3_BUCKET_NAME}}
