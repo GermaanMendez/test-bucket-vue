@@ -25,6 +25,10 @@ jobs:
     - name: Build Vue.js app
       run: npm run build
 
+    - name: read variables
+      run: echo "Bucket name is ${{ secrets.S3_BUCKET_NAME }}  AWS acces key is ${{ secrets.AWS_ACCESS_KEY_ID }}"
+
+
     - name: Deploy to S3
       uses: jakejarvis/s3-sync-action@v0.5.1
       with:
