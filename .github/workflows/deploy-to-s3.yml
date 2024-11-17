@@ -56,9 +56,9 @@ jobs:
         aws-session-token: ${{AWS_TOKEN_SECRET}}
         aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: S3 Deploy
-        run: ./.github/scripts/deploy.sh
-        shell: bash
-        env:
-          S3_ORIGIN_BUCKET: ${{ secrets.S3_BUCKET_NAME}}
+    - name: S3 Deploy
+      run: ./.github/scripts/deploy.sh
+      shell: bash
+      env:
+        S3_ORIGIN_BUCKET: ${{ secrets.S3_BUCKET_NAME}}
 
