@@ -4,6 +4,24 @@ on:
   push:
     branches:
       - main  
+    inputs:
+      CI_ENV:
+        required: true
+        type: string
+      CONTENTFUL_ENVIRONMENT:
+        required: true
+        type: string
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_DEFAULT_REGION:
+        required: true
+      AWS_SESSION_TOKEN:
+        required: true
+      S3_ORIGIN_BUCKET:
+        required: true
 
 jobs:
   deploy:
@@ -22,11 +40,13 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Build Vue.js app
-      run: npm run build
-
-    - name: read variables
-      run: echo "Bucket name is ${{ secrets.S3_BUCKET_NAME }}  AWS acces key is ${{ secrets.AWS_ACCESS_KEY_ID }}"
+    - name: Build NextJS static site
+      run: ./.github/scripts/build.sh
+      shell: bash
+      env:
+        CI_ENV: ${{ inputs.CI_ENV }}
+        CONTENTFUL_ENVIRONMENT: ${{ inputs.CONTENTFUL_ENVIRONMENT }}
+        S3_ORIGIN_BUCKET:  ${{ secrets.S3_BUCKET_NAME}}
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -36,13 +56,9 @@ jobs:
         aws-session-token: ${{AWS_TOKEN_SECRET}}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Deploy to S3
-      uses: jakejarvis/s3-sync-action@v0.5.1
-      with:
-        args: --acl public-read --delete
-      env:
-        AWS_S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: ${{ secrets.AWS_REGION }}
-        SOURCE_DIR: dist 
+      - name: S3 Deploy
+        run: ./.github/scripts/deploy.sh
+        shell: bash
+        env:
+          S3_ORIGIN_BUCKET: ${{ secrets.S3_BUCKET_NAME}}
+
