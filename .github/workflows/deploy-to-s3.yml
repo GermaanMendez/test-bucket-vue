@@ -50,7 +50,7 @@ jobs:
         env:
           CI_ENV: ${{ inputs.CI_ENV }}
           CONTENTFUL_ENVIRONMENT: ${{ inputs.CONTENTFUL_ENVIRONMENT }}
-          S3_ORIGIN_BUCKET:  "test-vue-gm"
+          S3_ORIGIN_BUCKET:  ${{ secrets.S3_BUCKET_NAME}}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -67,4 +67,4 @@ jobs:
         run: ./.github/scripts/deploy.sh
         shell: bash
         env:
-          S3_ORIGIN_BUCKET: "test-vue-gm"
+          S3_ORIGIN_BUCKET: ${{ secrets.S3_BUCKET_NAME}}
